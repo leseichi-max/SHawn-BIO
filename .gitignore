@@ -1,0 +1,58 @@
+# SHawn-BIO: Advanced Research Storage Control
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# --- [Core Intelligence Storage] ---
+# 지능형 지식 베이스 (ChromaDB 등) - 깃 용량 초과 방지
+knowledge_base/
+*.db
+*.sqlite3
+indices/
+embeddings/
+
+# --- [Bio-Data & Analytics] ---
+# 대용량 연구 데이터 (동기화 방지)
+data/
+!data/.gitkeep
+outputs/
+*.fastq
+*.bam
+*.vcf
+*.sam
+*.fasta
+*.fna
+*.tar.gz
+*.zip
+*.7z
+
+# --- [OneDrive & Sync Artifacts] ---
+# 원드라이브 동기화 과정에서 생성되는 임시 파일
+.sync/
+.tmp/
+~*
+.lock
+
+# --- [macOS & IDEs] ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.vscode/
+.idea/
+.project
+
+# --- [Others] ---
+*.log
+.env
+.opencode

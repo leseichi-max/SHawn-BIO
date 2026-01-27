@@ -5,21 +5,36 @@ ResearchEngine - SHawn-BIO 고도화 엔진
 import os
 import asyncio
 from typing import List, Optional
+import sys
 from loguru import logger
-from shawn_brain import SHawnBrain
+from typing import List, Optional
+
+# 프로젝트 루트 및 시스템 폴더 경로 추가
+curr_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(curr_dir)
+sys.path.append(os.path.join(root_dir, "99-System"))
+
+from shawn_brain_v4 import SHawnBrainV4
+import sbi_pipeline
 
 class ResearchEngine:
     def __init__(self):
-        self.brain = SHawnBrain()
-        curr_dir = os.path.dirname(os.path.abspath(__file__))
-        self.bio_root = os.path.join(curr_dir, "01-Bio-Research")
+        # 최신 v4.5 아키텍처 사용
+        self.brain = SHawnBrainV4(use_ensemble=False)
+        self.pipeline = sbi_pipeline.SBIPipeline()
+        self.bio_root = os.path.join(root_dir, "01-Bio-Research")
 
     async def meta_analyze(self, topic: str) -> str:
-        """관련된 모든 문서를 찾아 통합 분석 수행"""
+        """관련된 모든 문서(Local md + OneDrive RAG)를 찾아 통합 토론 분석 수행"""
         logger.info(f"Starting Meta-Analysis for: {topic}")
         
-        # 1. 문서 검색
+        # 1. 문서 검색 (Vector DB - OneDrive)
         matched_content = []
+        rag_hits = self.pipeline.search(topic, n_results=5)
+        for hit in rag_hits:
+            matched_content.append(f"Source (OneDrive): {hit['source']}\nContent:\n{hit['content'][:1000]}")
+
+        # 2. 문서 검색 (Local md)
         for root, dirs, files in os.walk(self.bio_root):
             for file in files:
                 if file.endswith(".md"):
@@ -52,8 +67,8 @@ class ResearchEngine:
 모든 결과는 한국어로 작성하며, 전문적이고 통찰력 있는 형식을 유지하세요.
 """
         
-        # UnifiedBrain.process 호출
-        response, used_model, _ = await self.brain.process(prompt, domain="bio")
+        # SHawnBrainV4.think 호출 (Debate 모드)
+        response, info = await self.brain.think(prompt, task_type="debate")
         return response
 
 if __name__ == "__main__":
